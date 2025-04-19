@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {
+      "bl_idname": "ShaderNodeBsdfPrincipled",
+      "location": [0.0, 0.0],
+      "inputs": [
+        {"name": "Base Color", "default_value": [0.8, 0.8, 0.8, 1.0]},
+        {"name": "Metallic", "default_value": 0.0},
+        {"name": "Roughness", "default_value": 0.4}
+      ]
+    }
+  ]
+}

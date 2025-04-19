@@ -1,0 +1,17 @@
+schema_version = "1.0.0"
+
+id = "node_preset_manager"
+version = "1.0.0"
+name = "节点预设管理"
+tagline = "node_preset_manager"
+description = "节点预设保存与加载功能"
+maintainer = "JuziD"
+type = "add-on"
+
+blender_version_min = "4.2.0"
+location = "节点编辑器 > 侧边栏"
+category = "Node"
+
+
+
+license = ["SPDX:GPL-3.0-or-later"]
