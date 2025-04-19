@@ -17,24 +17,24 @@ class NODE_OT_save_node_preset(bpy.types.Operator):
         nodes_data = {
             'nodes': [{
                 'bl_idname': n.bl_idname,
-                'location': [float(x) for x in n.location],
+                'location': list(n.location.copy()),  # 使用copy()确保获取原始数据
                 'inputs': [{
-                    # 处理可迭代和不可迭代类型
-                    'default_value': tuple(i.default_value) if hasattr(i, 'default_value') and hasattr(i.default_value, '__iter__') 
-                                 else getattr(i, 'default_value', None),
+                    'default_value': tuple(i.default_value) 
+                    if hasattr(i, 'default_value') and hasattr(i.default_value, '__iter__')
+                    else getattr(i, 'default_value', None),
                     'name': i.name
                 } for i in n.inputs],
                 'outputs': [{
-                    # 使用相同的处理逻辑
-                    'default_value': tuple(o.default_value) if hasattr(o, 'default_value') and hasattr(o.default_value, '__iter__') 
-                                 else getattr(o, 'default_value', None),
+                    'default_value': tuple(o.default_value) 
+                    if hasattr(o, 'default_value') and hasattr(o.default_value, '__iter__')
+                    else getattr(o, 'default_value', None),
                     'name': o.name
                 } for o in n.outputs]
             } for n in node_tree.nodes]
         }
         
         with open(self.filepath, 'w') as f:
-            json.dump(nodes_data, f, indent=2)
+            json.dump(nodes_data, f, indent=2, default=lambda x: list(x) if hasattr(x, '__iter__') else str(x))
         return {'FINISHED'}
 
     def invoke(self, context, event):
