@@ -1,6 +1,10 @@
 import bpy
 import json
 import os
+from ..__init__ import dir_init_main, dir_presets
+
+from ..config import __addon_name__
+from ..preference.AddonPreferences import ExampleAddonPreferences
 
 class NODE_OT_save_node_preset(bpy.types.Operator):
     bl_idname = "node.save_node_preset"
@@ -36,7 +40,8 @@ class NODE_OT_save_node_preset(bpy.types.Operator):
 class NODE_OT_load_node_preset(bpy.types.Operator):
     bl_idname = "node.load_node_preset"
     bl_label = "加载节点预设"
-    filepath = bpy.props.StringProperty(subtype='FILE_PATH')
+
+    filepath: bpy.props.StringProperty(subtype='FILE_PATH') # type: ignore
 
     def execute(self, context):
         node_tree = context.space_data.edit_tree
@@ -50,13 +55,14 @@ class NODE_OT_load_node_preset(bpy.types.Operator):
             node = node_tree.nodes.new(node_info['bl_idname'])
             node.location = node_info['location']
             
-            for i, input_info in enumerate(node_info['inputs']):
-                if i < len(node.inputs) and input_info['default_value'] is not None:
-                    node.inputs[i].default_value = input_info['default_value']
-            
-            for o, output_info in enumerate(node_info['outputs']):
-                if o < len(node.outputs) and output_info['default_value'] is not None:
-                    node.outputs[o].default_value = output_info['default_value']
+            if "inputs" in node_info:
+                for i, input_info in enumerate(node_info['inputs']):
+                    if i < len(node.inputs) and input_info['default_value'] is not None:
+                        node.inputs[i].default_value = input_info['default_value']
+            if "outputs" in node_info:
+                for o, output_info in enumerate(node_info['outputs']):
+                    if o < len(node.outputs) and output_info['default_value'] is not None:
+                        node.outputs[o].default_value = output_info['default_value']
 
         return {'FINISHED'}
 
@@ -69,9 +75,10 @@ class NODE_OT_load_builtin_preset(bpy.types.Operator):
     bl_label = "加载内置预设"
 
     def execute(self, context):
-        #preset_name = context.scene.node_preset_items
-        #preset_path = os.path.join(os.path.dirname(__file__), 'presets', preset_name + '.json')
-        preset_path = os.path.join(os.path.dirname(__file__), 'presets', 'builtin_preset_1.json')
+        preset_name = context.scene.node_preset_items
+        preset_path = os.path.join(dir_presets, f"builtin_preset_{preset_name}.json")
         if os.path.exists(preset_path):
+            print(f"加载内置预设：{preset_name}")
+            # 直接调用 load_node_preset 操作符，不传递 filepath
             bpy.ops.node.load_node_preset(filepath=preset_path)
         return {'FINISHED'}
