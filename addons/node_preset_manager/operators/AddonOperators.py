@@ -10,20 +10,20 @@ class NODE_OT_save_node_preset(bpy.types.Operator):
     bl_idname = "node.save_node_preset"
     bl_label = "保存节点预设"
     
-    filepath = str(bpy.props.StringProperty(subtype='FILE_PATH'))
+    filepath : bpy.props.StringProperty(subtype='FILE_PATH')
     
     def execute(self, context):
         node_tree = context.space_data.edit_tree
         nodes_data = {
             'nodes': [{
                 'bl_idname': n.bl_idname,
-                'location': list(n.location),
+                'location': [float(x) for x in n.location],  # 将Vector转换为浮点数列表
                 'inputs': [{
-                    'default_value': getattr(i, 'default_value', None),
+                    'default_value': tuple(i.default_value) if hasattr(i, 'default_value') else None,
                     'name': i.name
                 } for i in n.inputs],
                 'outputs': [{
-                    'default_value': getattr(o, 'default_value', None),
+                    'default_value': tuple(o.default_value) if hasattr(o, 'default_value') else None,
                     'name': o.name
                 } for o in n.outputs]
             } for n in node_tree.nodes]
