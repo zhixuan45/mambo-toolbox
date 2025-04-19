@@ -14,27 +14,42 @@ class NODE_OT_save_node_preset(bpy.types.Operator):
     
     def execute(self, context):
         node_tree = context.space_data.edit_tree
+        
+        def convert_blender_data(value):
+            """统一处理Blender数据类型转换"""
+            if hasattr(value, '__iter__'):
+                return [float(v) for v in value]  # 处理Vector/Color等可迭代类型
+            try:
+                return float(value)  # 处理普通数值
+            except (TypeError, ValueError):
+                return str(value)  # 其他类型转为字符串
+        
         nodes_data = {
             'nodes': [{
                 'bl_idname': n.bl_idname,
-                'location': list(n.location.copy()),  # 使用copy()确保获取原始数据
+                'name': n.name,  # 新增节点名称保存
+                'location': [float(x) for x in n.location],  # 确保转换为Python列表
                 'inputs': [{
-                    'default_value': tuple(i.default_value) 
-                    if hasattr(i, 'default_value') and hasattr(i.default_value, '__iter__')
-                    else getattr(i, 'default_value', None),
+                    'default_value': convert_blender_data(getattr(i, 'default_value', None)),
                     'name': i.name
                 } for i in n.inputs],
                 'outputs': [{
-                    'default_value': tuple(o.default_value) 
-                    if hasattr(o, 'default_value') and hasattr(o.default_value, '__iter__')
-                    else getattr(o, 'default_value', None),
+                    'default_value': convert_blender_data(getattr(o, 'default_value', None)),
                     'name': o.name
                 } for o in n.outputs]
-            } for n in node_tree.nodes]
+            } for n in node_tree.nodes],
+            'links': [
+                {
+                    'from_node': link.from_node.name,
+                    'from_socket': link.from_socket.identifier,  # 使用唯一标识符
+                    'to_node': link.to_node.name,
+                    'to_socket': link.to_socket.identifier
+                } for link in node_tree.links
+            ]
         }
         
         with open(self.filepath, 'w') as f:
-            json.dump(nodes_data, f, indent=2, default=lambda x: list(x) if hasattr(x, '__iter__') else str(x))
+            json.dump(nodes_data, f, indent=2)
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -49,24 +64,49 @@ class NODE_OT_load_node_preset(bpy.types.Operator):
 
     def execute(self, context):
         node_tree = context.space_data.edit_tree
-        for n in node_tree.nodes:
-            node_tree.nodes.remove(n)
-
+        node_tree.nodes.clear()  # 完全清除所有节点
+        
         with open(self.filepath, 'r') as f:
             nodes_data = json.load(f)
 
+        node_map = {}
         for node_info in nodes_data['nodes']:
             node = node_tree.nodes.new(node_info['bl_idname'])
+            node.name = node_info['name']  # 恢复原始名称
             node.location = node_info['location']
-            
-            if "inputs" in node_info:
-                for i, input_info in enumerate(node_info['inputs']):
-                    if i < len(node.inputs) and input_info['default_value'] is not None:
-                        node.inputs[i].default_value = input_info['default_value']
-            if "outputs" in node_info:
-                for o, output_info in enumerate(node_info['outputs']):
-                    if o < len(node.outputs) and output_info['default_value'] is not None:
-                        node.outputs[o].default_value = output_info['default_value']
+            node_map[node_info['name']] = node  # 改用name作为键
+
+            # 处理输入值
+            for i, input_info in enumerate(node_info.get('inputs', [])):
+                if i < len(node.inputs) and input_info['default_value'] is not None:
+                    try:
+                        val = input_info['default_value']
+                        if isinstance(val, list):  # 处理Vector/Color等数组类型
+                            node.inputs[i].default_value = tuple(val)
+                        else:  # 处理普通数值
+                            node.inputs[i].default_value = float(val)
+                    except Exception as e:
+                        print(f"输入值设置失败：{node.name}.{i} - {str(e)}")
+        
+            # 处理输出值（逻辑相同）
+            for o, output_info in enumerate(node_info.get('outputs', [])):
+                if o < len(node.outputs):
+                    try:
+                        val = output_info.get('default_value', [])
+                        node.outputs[o].default_value = val if isinstance(val, float) else tuple(val)
+                    except Exception as e:
+                        print(f"输出值设置失败：{node.name}.{o} - {str(e)}")
+
+        # 重建连接
+        for link_info in nodes_data.get('links', []):
+            try:
+                from_node = node_map[link_info['from_node']]
+                to_node = node_map[link_info['to_node']]
+                from_socket = next(s for s in from_node.outputs if s.identifier == link_info['from_socket'])
+                to_socket = next(s for s in to_node.inputs if s.identifier == link_info['to_socket'])
+                node_tree.links.new(to_socket, from_socket)
+            except Exception as e:
+                print(f"连接重建失败：{str(e)}")
 
         return {'FINISHED'}
 
