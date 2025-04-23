@@ -10,7 +10,7 @@ This addon is designed for Blender, with the main functionality of saving and lo
   *Save Material Nodes*: Users can save current material node configurations as presets for future use.
 - **加载材质节点**：从保存的预设列表中选择预设，快速应用到当前场景中。  
   *Load Material Nodes*: Select presets from the saved list to quickly apply to the current scene.
-- **预设管理**：支持对保存的预设进行重命名、删除等操作。  
+- **预设管理**：[WIP]支持对保存的预设进行重命名、删除等操作。  
   *Preset Management*: Supports renaming and deleting saved presets.
 ![GUI](https://github.com/user-attachments/assets/4bf8e439-3b74-426f-8958-e9ef2c546ed9)
 
@@ -39,7 +39,7 @@ This addon is designed for Blender, with the main functionality of saving and lo
 2. 点击 `加载预设` 按钮，所选预设将应用到当前场景。  
    *Click the `Load Preset` button to apply the selected preset to the current scene.*
 
-### 管理预设 / Managing Presets
+### [WIP]管理预设 / Managing Presets
 - **重命名**：在预设列表中右键点击预设名称，选择 `重命名` 选项，输入新名称后确认。  
   *Rename*: Right-click the preset name in the list, select `Rename`, enter a new name and confirm.
 - **删除**：在预设列表中右键点击预设名称，选择 `删除` 选项。  
