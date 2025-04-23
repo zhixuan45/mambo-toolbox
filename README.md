@@ -12,6 +12,7 @@ This addon is designed for Blender, with the main functionality of saving and lo
   *Load Material Nodes*: Select presets from the saved list to quickly apply to the current scene.
 - **预设管理**：支持对保存的预设进行重命名、删除等操作。  
   *Preset Management*: Supports renaming and deleting saved presets.
+![GUI](https://github.com/user-attachments/assets/4bf8e439-3b74-426f-8958-e9ef2c546ed9)
 
 ## 安装方法 / Installation
 1. 下载插件文件。  
