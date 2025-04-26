@@ -24,10 +24,9 @@ bl_info = {
 }
 
 _addon_properties = {
-    bpy.types.Scene: {
+    bpy.types.NodeTree: {
         "name": StringProperty(name="预设名称"),
         "nodes_data": StringProperty(name="节点数据"),
-
         "node_preset_items": IntProperty(name="节点预设项"),
     },
 }

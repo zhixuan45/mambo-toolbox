@@ -12,12 +12,7 @@ class NODE_PT_node_preset_panel(bpy.types.Panel):
     
     def draw(self, context):
         layout = self.layout
-        layout.operator("node.save_node_preset")
-        layout.operator("node.load_node_preset")
-        
-        # 内置预设面板
-        box = layout.box()
-        box.label(text="内置预设")
-        row = box.row()
-        row.prop(context.scene, 'node_preset_items', text="")
-        row.operator("node.load_builtin_preset", text="加载")
+        # 修改后的操作符引用
+        layout.operator("npm.save_node_preset")
+        layout.operator("npm.load_node_preset") 
+        row.operator("npm.load_builtin_preset", text="加载")
