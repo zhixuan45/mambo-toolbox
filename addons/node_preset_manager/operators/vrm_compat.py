@@ -9,6 +9,14 @@ class VRM_COMPAT_OT_create_mtoon_nodes(Operator):
     def execute(self, context):
         # TODO: Implement MToon node group creation logic
         return {'FINISHED'}
+        
+    def is_vrm_compatible(self, node):
+        """检查节点是否为VRM兼容节点"""
+        if not node:
+            return False
+            
+        # 检查节点类型和属性是否符合VRM规范
+        return hasattr(node, 'bl_idname') and 'vrm' in node.bl_idname.lower()
 
 class VRM_COMPAT_OT_fix_uv_mapping(Operator):
     bl_idname = "vrm_compat.fix_uv_mapping"
