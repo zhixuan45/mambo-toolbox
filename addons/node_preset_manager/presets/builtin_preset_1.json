@@ -1,6 +1,29 @@
 {
   "nodes": [
     {
+      "bl_idname": "ShaderNodeValToRGB",
+      "location": [-400.0, 0.0],
+      "label": "光照离散化",
+      "inputs": [
+        {"name": "Fac", "default_value": 0.5}
+      ],
+      "color_ramp": {
+        "elements": [
+          {"position": 0.0, "color": [0.1, 0.1, 0.1, 1.0]},
+          {"position": 0.5, "color": [0.5, 0.5, 0.5, 1.0]},
+          {"position": 1.0, "color": [1.0, 1.0, 1.0, 1.0]}
+        ]
+      }
+    },
+    {
+      "bl_idname": "ShaderNodeSeparateColor",
+      "location": [-200.0, 200.0],
+      "label": "ILM贴图处理",
+      "inputs": [
+        {"name": "Color", "default_value": [1.0, 1.0, 1.0, 1.0]}
+      ]
+    },
+    {
       "bl_idname": "ShaderNodeBsdfPrincipled",
       "location": [0.0, 0.0],
       "inputs": [
@@ -9,5 +32,9 @@
         {"name": "Roughness", "default_value": 0.4}
       ]
     }
+  ],
+  "links": [
+    {"from_node": "光照离散化", "from_socket": "Color", "to_node": "ShaderNodeBsdfPrincipled", "to_socket": "Base Color"},
+    {"from_node": "ILM贴图处理", "from_socket": "R", "to_node": "ShaderNodeBsdfPrincipled", "to_socket": "Specular"}
   ]
 }

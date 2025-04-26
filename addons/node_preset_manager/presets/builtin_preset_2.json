@@ -1,6 +1,26 @@
 {
   "nodes": [
     {
+      "bl_idname": "ShaderNodeGroup",
+      "location": [-400.0, -200.0],
+      "label": "KajiyaKay高光",
+      "group_name": "KajiyaKay_Highlight",
+      "inputs": [
+        {"name": "tangent_input", "default_value": [0.0, 0.0, 0.0]},
+        {"name": "roughness", "default_value": 0.3}
+      ]
+    },
+    {
+      "bl_idname": "ShaderNodeVectorMath",
+      "location": [-400.0, 200.0],
+      "label": "法线外扩描边",
+      "inputs": [
+        {"name": "Vector", "default_value": [0.0, 0.0, 0.0]},
+        {"name": "Scale", "default_value": 0.01}
+      ],
+      "operation": "SCALE"
+    },
+    {
       "bl_idname": "ShaderNodeBsdfPrincipled",
       "location": [0.0, 0.0],
       "inputs": [
@@ -11,5 +31,9 @@
         {"name": "IOR", "default_value": 1.45}
       ]
     }
+  ],
+  "links": [
+    {"from_node": "KajiyaKay高光", "from_socket": "高光强度", "to_node": "ShaderNodeBsdfPrincipled", "to_socket": "Specular"},
+    {"from_node": "法线外扩描边", "from_socket": "Vector", "to_node": "ShaderNodeBsdfPrincipled", "to_socket": "Normal"}
   ]
 }
