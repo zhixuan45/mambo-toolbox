@@ -148,6 +148,9 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+# 管理员运行脚本
+run_as_admin.bat
+
 # Cython debug symbols
 cython_debug/
 

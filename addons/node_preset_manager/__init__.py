@@ -12,13 +12,13 @@ from bpy.props import *
 # Add-on info
 bl_info = {
     "name": "节点预设管理",
-    "author": "[You name]",
+    "author": "zhixuan45",
     "blender": (3, 5, 0),
     "version": (1, 0, 0),
     "description": "节点预设保存与加载功能",
     "warning": "",
-    "doc_url": "[documentation url]",
-    "tracker_url": "[contact email]",
+    "doc_url": "https://github.com/zhixuan45/node_preset_manager",
+    "tracker_url": "https://github.com/zhixuan45/node_preset_manager/issues",
     "support": "COMMUNITY",
     "category": "Node"
 }
