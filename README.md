@@ -26,7 +26,7 @@ This addon is designed for Blender, with the main functionality of saving and lo
 
 ## 使用方法 / Usage
 ### 保存材质节点 / Saving Material Nodes
-1. 在 Blender 中创建或调整好所需的材质节点。  
+1. 在 Blender 中创建或调整好所需的材质节点。  *当然你也可以去打开别人的工程文件*
    *Create or adjust the desired material nodes in Blender.*
 2. 找到插件面板，点击 `保存预设` 按钮。  
    *Find the addon panel and click the `Save Preset` button.*
