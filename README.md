@@ -26,7 +26,7 @@ This addon is designed for Blender, with the main functionality of saving and lo
 
 ## 使用方法 / Usage
 ### 保存材质节点 / Saving Material Nodes
-1. 在 Blender 中创建或调整好所需的材质节点。  *当然你也可以去打开别人的工程文件*
+1. 在 Blender 中创建或调整好所需的材质节点.*当然你也可以去打开别人的工程文件* 
    *Create or adjust the desired material nodes in Blender.*
 2. 找到插件面板，点击 `保存预设` 按钮。  
    *Find the addon panel and click the `Save Preset` button.*
@@ -48,9 +48,16 @@ This addon is designed for Blender, with the main functionality of saving and lo
 ## 注意事项 / Notes
 - 保存预设时，请确保材质节点配置已经完成，避免保存不完整的配置。  
   *When saving presets, ensure the material node configuration is complete to avoid saving incomplete setups.*
+
+
 - 加载预设可能会覆盖当前场景中的材质节点，请提前备份重要数据。  
   *Loading presets may overwrite existing material nodes in the scene, please back up important data beforehand.*
 
 ## 反馈与贡献 / Feedback & Contribution
 如果您在使用过程中遇到问题或有改进建议，请在 [插件仓库地址] 提交 issue。欢迎大家为插件的发展贡献代码！  
 *If you encounter issues or have suggestions for improvement, please submit an issue at [Addon Repository URL]. Contributions to the addon's development are welcome!*
+
+## 致谢 / Acknowledgements
+本插件开发使用了 [BlenderAddonPackageTool](https://github.com/xzhuah/BlenderAddonPackageTool) 框架，特此感谢。
+
+*This addon was developed using the [BlenderAddonPackageTool](https://github.com/xzhuah/BlenderAddonPackageTool) framework, special thanks.*

@@ -12,6 +12,8 @@ class NODE_PT_node_preset_panel(bpy.types.Panel):
     
     def draw(self, context):
         layout = self.layout
+        # 免费声明
+        layout.label(text="该插件为免费提供，如是付费获取请立刻退款")
         # 保存和加载按钮
         layout.operator("node.save_node_preset")
         layout.operator("node.load_node_preset")
