@@ -3,7 +3,7 @@ schema_version = "1.0.0"
 # Example of manifest file for a Blender extension
 # Change the values according to your extension
 # id must be the same as the directory name, and must be unique
-id = "sample_addon"
+id = "mesh_manager"
 version = "0.0.1"
 name = "网格管理插件"
 tagline = "Blender网格管理工具"

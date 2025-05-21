@@ -35,7 +35,8 @@ def init():
 
 def register():
     for cls in ordered_classes:
-        bpy.utils.register_class(cls)
+        if not hasattr(bpy.types, cls.__name__):
+            bpy.utils.register_class(cls)
 
     for module in modules:
         if module.__name__ == __name__:
@@ -48,7 +49,8 @@ def register():
 
 def unregister():
     for cls in reversed(ordered_classes):
-        bpy.utils.unregister_class(cls)
+        if hasattr(bpy.types, cls.__name__):
+            bpy.utils.unregister_class(cls)
 
     for module in modules:
         if module.__name__ == __name__:
