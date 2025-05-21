@@ -2,9 +2,9 @@ schema_version = "1.0.0"
 
 id = "node_preset_manager"
 version = "1.0.0"
-name = "节点预设管理"
-tagline = "node_preset_manager"
-description = "节点预设保存与加载功能"
+name = "曼波工具箱 - 节点预设管理"
+tagline = "mambo_toolbox_node_preset"
+description = "曼波工具箱系列插件之一，提供节点预设保存与加载功能"
 maintainer = "JuziD"
 type = "add-on"
 
