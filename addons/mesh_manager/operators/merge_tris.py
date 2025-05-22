@@ -39,4 +39,4 @@ class MESH_OT_AdvancedMergeTris(Operator):
                     cmp_vertex=tool.cmp_vertex
                 )
             except Exception as e:
-                print(f"处理 {obj.name} 时
+                print(f"处理 {obj.name} 时发生错误: {e}")

@@ -41,4 +41,4 @@ class VIEW3D_PT_FaceStats(Panel):
             # 操作按钮
             layout.separator()
             row = layout.row()
-            row.operator("mesh.advanced_merge_tris", icon='MOD_TRIANG
+            row.operator("mesh.advanced_merge_tris", icon='MOD_TRIANGULATE')
