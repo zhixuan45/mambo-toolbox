@@ -7,10 +7,10 @@ bl_info = {
     "author": "zhixuan45",
     "blender": (3, 5, 0),
     "version": (0, 0, 1),
-    "description": "This is a template for building addons",
+    "description": "整理网格用",
     "warning": "",
-    "doc_url": "[documentation url]",
-    "tracker_url": "[contact email]",
+    "doc_url": "https://github.com/zhixuan45/node_preset_manager",
+    "tracker_url": "https://github.com/zhixuan45/node_preset_manager/issues",
     "support": "COMMUNITY",
     "category": "3D View"
 }
