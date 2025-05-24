@@ -27,13 +27,13 @@ class VRM_COMPAT_OT_fix_uv_mapping(Operator):
         # TODO: Implement UV mapping property fixes
         return {'FINISHED'}
 
-#def register():
-    #if not hasattr(bpy.types, 'VRM_COMPAT_OT_create_mtoon_nodes_v2'):
+def register():
+    if not hasattr(bpy.types, 'VRM_COMPAT_OT_create_mtoon_nodes_v2'):
         bpy.utils.register_class(VRM_COMPAT_OT_create_mtoon_nodes_v2)
-    #if not hasattr(bpy.types, 'VRM_COMPAT_OT_fix_uv_mapping'):
+    if not hasattr(bpy.types, 'VRM_COMPAT_OT_fix_uv_mapping'):
         bpy.utils.register_class(VRM_COMPAT_OT_fix_uv_mapping)
 # 未知的地方注册了该改名类，可能是原代码中的错误
-#def unregister():
+def unregister():
 # 原代码中使用的 VRM_COMPAT_OT_create_mtoon_nodes 未定义，推测应使用已定义的 VRM_COMPAT_OT_create_mtoon_nodes_v2
-    #bpy.utils.unregister_class(VRM_COMPAT_OT_create_mtoon_nodes_v2)
-    #bpy.utils.unregister_class(VRM_COMPAT_OT_fix_uv_mapping)
+    bpy.utils.unregister_class(VRM_COMPAT_OT_create_mtoon_nodes_v2)
+    bpy.utils.unregister_class(VRM_COMPAT_OT_fix_uv_mapping)
