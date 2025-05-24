@@ -19,9 +19,10 @@ bl_info = {
 
 import os
 import sys
-from .properties import MergeToolSettings
-from .panels import FaceStatsPanel
-from .operators import AdvancedMergeTrisOperator
+from .preference.settings import MergeToolSettings
+from .panels.face_stats import FaceStats as FaceStatsPanel  # 修正类名不匹配
+from .operators.merge_tris import MESH_OT_AdvancedMergeTris as AdvancedMergeTrisOperator  # 修正类名不匹配
+from .operators.create_hair_curve import CreateHairCurveOperator
 # 获取当前插件目录并添加到 sys.path
 plugin_dir = os.path.dirname(os.path.realpath(__file__))
 if plugin_dir not in sys.path:
