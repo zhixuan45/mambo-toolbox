@@ -1,24 +1,9 @@
 # 初始化文件，启用子模块导入
+
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
 # 移除冗余导入
 import bpy
-import os
-import sys
-    from .properties import MergeToolSettings
-    from .panels import FaceStatsPanel
-    from .operators import AdvancedMergeTrisOperator
-# 获取当前插件目录并添加到 sys.path
-plugin_dir = os.path.dirname(os.path.realpath(__file__))
-if plugin_dir not in sys.path:
-    sys.path.append(plugin_dir)
-
-# 移除冗余导入
-import bpy
-from .properties import MergeToolSettings
-from .panels import FaceStatsPanel
-from .operators import AdvancedMergeTrisOperator
-
 bl_info = {
     "name": "曼波工具箱-网格修改器",
     "author": "zhixuan45",
@@ -31,6 +16,19 @@ bl_info = {
     "support": "COMMUNITY",
     "category": "3D View"
 }
+
+import os
+import sys
+from .properties import MergeToolSettings
+from .panels import FaceStatsPanel
+from .operators import AdvancedMergeTrisOperator
+# 获取当前插件目录并添加到 sys.path
+plugin_dir = os.path.dirname(os.path.realpath(__file__))
+if plugin_dir not in sys.path:
+    sys.path.append(plugin_dir)
+
+# 移除冗余导入
+
 
 # 注册与注销
 def register():
