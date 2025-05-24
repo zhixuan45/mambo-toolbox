@@ -14,7 +14,7 @@ bl_info = {
     "name": "节点预设管理",
     "author": "zhixuan45",
     "blender": (3, 5, 0),
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "description": "节点预设保存与加载功能",
     "warning": "",
     "doc_url": "https://github.com/zhixuan45/node_preset_manager",

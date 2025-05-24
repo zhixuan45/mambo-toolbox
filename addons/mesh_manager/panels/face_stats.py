@@ -2,8 +2,8 @@ import bpy
 from bpy.types import Panel
 from ..config import get_tool_settings
 
-class VIEW3D_PT_FaceStats(Panel):
-    bl_label = "面类型统计"
+class FaceStats(Panel):
+    bl_label = ""
     bl_idname = "VIEW3D_PT_face_stats"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -13,9 +13,14 @@ class VIEW3D_PT_FaceStats(Panel):
         layout = self.layout
         scene = context.scene
         tool = get_tool_settings(context)
-        
+
+
+        # 添加创建头发原点的按钮
+        row = layout.row()
+        row.operator("mesh.create_hair_curve", icon='EMPTY_AXIS', text="创建头发原点")
+        row.operator("mesh.search", icon='MOD_TRIANGULATE')
         # 统计活动物体的面类型
-        if context.object and context.object.type == 'MESH':
+        if context.object and context.object.type == 'MESH' and mesh.search :
             mesh = context.object.data
             tri = sum(1 for p in mesh.polygons if len(p.vertices) == 3)
             quad = sum(1 for p in mesh.polygons if len(p.vertices) == 4)
