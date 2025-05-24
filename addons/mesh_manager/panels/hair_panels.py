@@ -15,5 +15,5 @@ class HairTools(Panel):
         layout = self.layout
 
         # 添加创建头发原点的按钮
-        row = layout.row()
+        row = layout.row() if layout else None
         row.operator("mesh.create_hair_curve", icon='EMPTY_AXIS', text="创建头发原点")

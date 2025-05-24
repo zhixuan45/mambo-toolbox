@@ -20,8 +20,8 @@ bl_info = {
 import os
 import sys
 from .properties import MergeToolSettings
-from .panels import FaceStatsPanel
-from .operators import AdvancedMergeTrisOperator
+from .panels.face_stats import FaceStats
+from .operators.merge_tris import MESH_OT_AdvancedMergeTris
 # 获取当前插件目录并添加到 sys.path
 plugin_dir = os.path.dirname(os.path.realpath(__file__))
 if plugin_dir not in sys.path:
@@ -36,8 +36,8 @@ def register():
     
     bpy.utils.register_class(MergeToolSettings)
     bpy.types.Scene.merge_tool_settings = bpy.props.PointerProperty(type=MergeToolSettings)  # type: ignore[attr-defined]
-    bpy.utils.register_class(AdvancedMergeTrisOperator)
-    bpy.utils.register_class(FaceStatsPanel)
+    bpy.utils.register_class(MESH_OT_AdvancedMergeTris)
+    bpy.utils.register_class(FaceStats)
 
     # 注册依赖的操作符
     from .operators.remove_duplicate_verts import RemoveDuplicateVertsOperator  # pyright: ignore[reportMissingImports]
@@ -45,8 +45,9 @@ def register():
 
 
 def unregister():
-    bpy.utils.unregister_class(FaceStatsPanel)
-    bpy.utils.unregister_class(AdvancedMergeTrisOperator)
+    bpy.utils.unregister_class(MergeToolSettings)
+    bpy.utils.unregister_class(FaceStats)
+    bpy.utils.unregister_class(MESH_OT_AdvancedMergeTris)
     
     from .operators.remove_duplicate_verts import RemoveDuplicateVertsOperator  # pyright: ignore[reportMissingImports]
     bpy.utils.unregister_class(RemoveDuplicateVertsOperator)

@@ -1,15 +1,11 @@
 import bpy
 from bpy.types import Panel, Context, Mesh, Operator
 from typing import Optional, Any, Callable
-
-
-def get_tool_settings(context: Context) -> Any:
-    """临时定义工具设置获取函数"""
-    # 这里应该实现实际的获取逻辑
-    return context.scene
+from ..config import get_tool_settings  # 导入get_tool_settings函数
+from ..preference.settings import MergeToolSettings  # 使用插件根目录的绝对路径
 
 class FaceStats(Panel):
-    bl_label = ""
+    bl_label = "面工具"
     bl_idname = "VIEW3D_PT_face_stats"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -20,12 +16,6 @@ class FaceStats(Panel):
         scene = context.scene
         tool = get_tool_settings(context)
 
-        # 添加创建头发原点的按钮
-        row = layout.row() if layout else None
-        if row:
-            row.operator("mesh.create_hair_curve", icon='EMPTY_AXIS', text="创建头发原点")
-            row.operator("mesh.search", icon='MOD_TRIANGULATE')
-        
         # 统计活动物体的面类型
         if context.object and context.object.type == 'MESH':
             mesh = context.object.data
@@ -61,4 +51,5 @@ class FaceStats(Panel):
                     layout.separator()
                     row = layout.row()
                     if row:
-                        row.operator("mesh.advanced_merge_tris", icon='MOD_TRIANGULATE')
+                        # 修改: 使用 context.object 获取当前选中的对象，并传递给操作符
+                        row.operator("mesh.advanced_merge_tris", text="合并三角面", icon='MOD_TRIANGULATE').use_selected = True
