@@ -51,5 +51,21 @@ class MergeToolSettings(bpy.types.PropertyGroup):
         description="仅合并相同顶点颜色的面",
         default=False
     )
+    
+    curve_resolution: bpy.props.IntProperty(
+        name="曲线分辨率",
+        description="生成曲线的分辨率",
+        default=10,
+        min=1,
+        max=100
+    )
+    
+    curve_thickness: bpy.props.FloatProperty(
+        name="曲线厚度",
+        description="生成曲线的厚度",
+        default=0.1,
+        min=0.01,
+        max=1.0
+    )
 
     

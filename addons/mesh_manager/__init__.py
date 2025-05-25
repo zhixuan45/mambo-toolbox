@@ -22,6 +22,9 @@ import sys
 from .properties import MergeToolSettings
 from .panels.face_stats import FaceStats
 from .operators.merge_tris import MESH_OT_AdvancedMergeTris
+from .operators.create_hair_grid import MESH_OT_CreateHairGrid
+from .operators.drag_grid import MESH_OT_DragGrid
+from .operators.generate_curve import MESH_OT_GenerateCurve
 # 获取当前插件目录并添加到 sys.path
 plugin_dir = os.path.dirname(os.path.realpath(__file__))
 if plugin_dir not in sys.path:
@@ -32,18 +35,23 @@ if plugin_dir not in sys.path:
 
 # 注册与注销
 def register():
-
     
     bpy.utils.register_class(MergeToolSettings)
     bpy.types.Scene.merge_tool_settings = bpy.props.PointerProperty(type=MergeToolSettings)  # type: ignore[attr-defined]
     bpy.utils.register_class(MESH_OT_AdvancedMergeTris)
     bpy.utils.register_class(FaceStats)
+    bpy.utils.register_class(MESH_OT_CreateHairGrid)
+    bpy.utils.register_class(MESH_OT_DragGrid)
+    bpy.utils.register_class(MESH_OT_GenerateCurve)
 
 
 def unregister():
     bpy.utils.unregister_class(MergeToolSettings)
     bpy.utils.unregister_class(FaceStats)
     bpy.utils.unregister_class(MESH_OT_AdvancedMergeTris)
+    bpy.utils.unregister_class(MESH_OT_CreateHairGrid)
+    bpy.utils.unregister_class(MESH_OT_DragGrid)
+    bpy.utils.unregister_class(MESH_OT_GenerateCurve)
 
 
 if __name__ == "__main__":

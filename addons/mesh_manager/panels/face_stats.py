@@ -4,16 +4,27 @@ from typing import Optional, Any, Callable
 from ..config import get_tool_settings  # 导入get_tool_settings函数
 from ..preference.settings import MergeToolSettings  # 使用插件根目录的绝对路径
 
-class FaceStats(Panel):
-    bl_label = "面工具"
-    bl_idname = "VIEW3D_PT_face_stats"
+class FaceStats(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = "工具"
-    
-    def draw(self, context: Context):
+    bl_category = "Mesh Manager"
+    bl_label = "Mesh Operations"
+
+    def draw(self, context):
         layout = self.layout
         scene = context.scene
+
+        # 添加生成网格、拖动调整和生成曲线的按钮
+        layout.operator("mesh.create_hair_grid", text="Create Hair Grid", icon='GRID')
+        layout.operator("mesh.drag_grid", text="Drag Grid", icon='HAND')
+        layout.operator("mesh.generate_curve", text="Generate Curve", icon='CURVE_PATH')
+        
+        # 添加曲线参数调整
+        box = layout.box()
+        box.label(text="Curve Settings")
+        box.prop(scene.merge_tool_settings, "curve_resolution")
+        box.prop(scene.merge_tool_settings, "curve_thickness")
+
         tool = get_tool_settings(context)
 
         # 统计活动物体的面类型
