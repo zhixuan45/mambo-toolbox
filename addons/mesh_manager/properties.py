@@ -51,3 +51,5 @@ class MergeToolSettings(bpy.types.PropertyGroup):
         description="仅合并相同顶点颜色的面",
         default=False
     )
+
+    
