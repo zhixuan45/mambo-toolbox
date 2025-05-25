@@ -52,4 +52,4 @@ class FaceStats(Panel):
                     row = layout.row()
                     if row:
                         # 修改: 使用 context.object 获取当前选中的对象，并传递给操作符
-                        row.operator("mesh.advanced_merge_tris", text="合并三角面", icon='MOD_TRIANGULATE').use_selected = True
+                        row.operator("mesh.advanced_merge_tris", text="合并三角面", icon='MOD_TRIANGULATE')

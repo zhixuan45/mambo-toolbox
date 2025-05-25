@@ -15,9 +15,7 @@ class MESH_OT_AdvancedMergeTris(Operator):
     bl_label = "高级三角面合并"
     bl_description = "使用增强参数控制合并三角面"
     
-    # 新增属性：use_selected，用于标识是否使用选中的对象
-    use_selected: bpy.props.BoolProperty(default=False)
-    
+
     @classmethod
     def poll(cls, context: Context) -> bool:
         # 检查是否有激活对象且类型为MESH

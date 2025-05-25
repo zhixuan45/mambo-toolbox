@@ -39,18 +39,12 @@ def register():
     bpy.utils.register_class(MESH_OT_AdvancedMergeTris)
     bpy.utils.register_class(FaceStats)
 
-    # 注册依赖的操作符
-    from .operators.remove_duplicate_verts import RemoveDuplicateVertsOperator  # pyright: ignore[reportMissingImports]
-    bpy.utils.register_class(RemoveDuplicateVertsOperator)
-
 
 def unregister():
     bpy.utils.unregister_class(MergeToolSettings)
     bpy.utils.unregister_class(FaceStats)
     bpy.utils.unregister_class(MESH_OT_AdvancedMergeTris)
-    
-    from .operators.remove_duplicate_verts import RemoveDuplicateVertsOperator  # pyright: ignore[reportMissingImports]
-    bpy.utils.unregister_class(RemoveDuplicateVertsOperator)
+
 
 if __name__ == "__main__":
     register()
