@@ -22,13 +22,41 @@ class NODE_OT_save_node_preset(bpy.types.Operator):
             
             def convert_blender_data(value):
                 """统一处理Blender数据类型转换"""
-                if hasattr(value, '__iter__'):
-                    return [float(v) for v in value]  # 处理Vector/Color等可迭代类型
+                # 处理None值
+                if value is None:
+                    return 0.0
+                
+                # 特殊处理Vector/Euler/Color等特殊类型
+                if 'bpy.types' in str(type(value)):
+                    try:
+                        # 特殊处理Vector类型
+                        if 'Vector' in str(type(value)):
+                            return [float(v) for v in value[:]]
+                        # 特殊处理Euler类型
+                        elif 'Euler' in str(type(value)):
+                            return [float(v) for v in value.to_quaternion()]
+                        # 特殊处理Color类型
+                        elif 'Color' in str(type(value)):
+                            return [float(v) for v in value[:]] + [1.0]  # 强制扩展为RGBA四元组
+                        # 其他bpy类型使用to_tuple
+                        return [float(v) for v in value.to_tuple()]
+                    except (TypeError, ValueError, AttributeError):
+                        return str(value)
+                
+                # 处理布尔值
+                if isinstance(value, bool):
+                    return int(value)
+                
+                # 处理字符串类型
+                if isinstance(value, str):
+                    return value
+                
+                # 处理普通数值
                 try:
-                    return float(value)  # 处理普通数值
+                    return float(value)
                 except (TypeError, ValueError):
                     return str(value)  # 其他类型转为字符串
-        
+
             # 为每个节点添加序号
             nodes_data = {
                 'nodes': [],
@@ -125,44 +153,202 @@ class NODE_OT_load_node_preset(bpy.types.Operator):
                 
                 node_instances.append(node)  # 按索引顺序保存节点
 
-                # 处理输入值
+                # 修改节点属性设置部分
                 for i, input_info in enumerate(node_info.get('inputs', [])):
-                    if i < len(node.inputs) and input_info['default_value'] is not None:
+                    if i < len(node.inputs):
+                        input_socket = node.inputs[i]
+                        val = input_info['default_value']
+                        
+                        # 特殊处理不同类型的socket
                         try:
-                            val = input_info['default_value']
-                            if isinstance(val, list):
-                                node.inputs[i].default_value = tuple(val)
+                            if 'NodeSocketVector' in str(type(input_socket)):
+                                # 强制转换为Vector类型
+                                if isinstance(val, list) and len(val) >= 3:
+                                    input_socket.default_value = (val[0], val[1], val[2])
+                                else:
+                                    f_val = float(val) if not isinstance(val, str) else 0.0
+                                    input_socket.default_value = (f_val, f_val, f_val)
+                            elif 'NodeSocketColor' in str(type(input_socket)):
+                                # 强制转换为Color类型（四元组）
+                                if isinstance(val, list):
+                                    if len(val) >= 4:
+                                        input_socket.default_value = (val[0], val[1], val[2], val[3])
+                                    elif len(val) >= 3:
+                                        input_socket.default_value = (val[0], val[1], val[2], 1.0)
+                                    elif len(val) >= 1:
+                                        f_val = float(val[0]) if not isinstance(val[0], str) else 0.0
+                                        input_socket.default_value = (f_val, f_val, f_val, 1.0)
+                                else:
+                                    f_val = float(val) if not isinstance(val, str) else 0.0
+                                    input_socket.default_value = (f_val, f_val, f_val, 1.0)
+                            elif 'ShaderNodeGroup' in input_socket.node.bl_idname:
+                                # 特殊处理节点组socket
+                                if isinstance(val, list) and len(val) >= 1:
+                                    # 尝试匹配节点组的socket标识符
+                                    group_node = input_socket.node
+                                    for group_input in group_node.inputs:
+                                        if group_input.identifier == input_socket.identifier:
+                                            group_input.default_value = float(val[0]) if not isinstance(val[0], str) else 0.0
+                                            break
                             else:
-                                node.inputs[i].default_value = float(val)
+                                # 特殊处理节点组输入
+                                if 'ShaderNodeGroup' in input_socket.node.bl_idname:
+                                    group_node = input_socket.node
+                                    for group_input in group_node.inputs:
+                                        if group_input.identifier == input_socket.identifier:
+                                            if hasattr(group_input, 'default_value'):
+                                                if isinstance(val, list) and len(val) >= 1:
+                                                    try:
+                                                        group_input.default_value = [float(v) if not isinstance(v, str) else 0.0 for v in val[:len(group_input.default_value)]]
+                                                    except:
+                                                        group_input.default_value = float(val[0]) if not isinstance(val[0], str) else 0.0
+                                                break
+                                else:
+                                    # 默认处理数值类型
+                                    if not isinstance(val, str):
+                                        input_socket.default_value = float(val)
                         except Exception as e:
                             print(f"输入值设置失败：{node.name}.{i} - {str(e)}")
                 
-                # 处理输出值
+                # 修改输出属性设置部分
                 for o, output_info in enumerate(node_info.get('outputs', [])):
                     if o < len(node.outputs):
+                        output_socket = node.outputs[o]
+                        val = output_info.get('default_value', [])
+                        
                         try:
-                            val = output_info.get('default_value', [])
-                            node.outputs[o].default_value = val if isinstance(val, float) else tuple(val)
+                            if 'NodeSocketColor' in str(type(output_socket)):
+                                if isinstance(val, list):
+                                    if len(val) >= 4:
+                                        output_socket.default_value = (val[0], val[1], val[2], val[3])
+                                    elif len(val) >= 3:
+                                        output_socket.default_value = (val[0], val[1], val[2], 1.0)
+                            elif 'NodeSocketShader' in str(type(output_socket)):
+                                continue
+                            else:
+                                if output_socket.node.bl_idname == 'ShaderNodeGroup':
+                                    # 特殊处理节点组输出
+                                    group_node = output_socket.node
+                                    if group_node.node_tree and group_node.node_tree.nodes:
+                                        for sock in group_node.inputs:
+                                            if sock.identifier == output_socket.identifier and sock.node_tree:
+                                                # 找到节点组内部对应的输入节点
+                                                group_input_node = sock.node_tree.nodes.get('Group Input')
+                                                if group_input_node:
+                                                    for internal_sock in group_input_node.outputs:
+                                                        if internal_sock.identifier == sock.identifier:
+                                                            if hasattr(internal_sock, 'default_value'):
+                                                                if isinstance(val, list) and len(val) >= 1:
+                                                                    try:
+                                                                        internal_sock.default_value = [float(v) if not isinstance(v, str) else 0.0 for v in val[:len(internal_sock.default_value)]]
+                                                                    except:
+                                                                        internal_sock.default_value = float(val[0]) if not isinstance(val[0], str) else 0.0
+                                                                break
+                                else:
+                                    if hasattr(output_socket, 'default_value'):
+                                        if isinstance(val, list):
+                                            if len(val) >= 1:
+                                                # 强制转换列表值为合适格式
+                                                if 'NodeSocketVector' in str(type(output_socket)):
+                                                    if len(val) >= 3:
+                                                        output_socket.default_value = (val[0], val[1], val[2])
+                                                    else:
+                                                        output_socket.default_value = (val[0], val[0], val[0])
+                                                elif 'NodeSocketColor' in str(type(output_socket)):
+                                                    if len(val) >= 4:
+                                                        output_socket.default_value = (val[0], val[1], val[2], val[3])
+                                                    else:
+                                                        output_socket.default_value = (val[0], val[0], val[0], 1.0)
+                                                elif output_socket.node.bl_idname == 'ShaderNodeGroup':
+                                                    group_node = output_socket.node
+                                                    if group_node.node_tree and group_node.node_tree.nodes:
+                                                        # 查找节点组内部对应的输出节点
+                                                        group_output_node = group_node.node_tree.nodes.get('Group Output')
+                                                        if group_output_node:
+                                                            for internal_sock in group_output_node.inputs:
+                                                                if internal_sock.identifier == output_socket.identifier:
+                                                                    # 强制转换为内部socket类型匹配的格式
+                                                                    if 'NodeSocketVector' in str(type(internal_sock)):
+                                                                        if isinstance(val, list) and len(val) >= 3:
+                                                                            internal_sock.default_value = (val[0], val[1], val[2])
+                                                                        else:
+                                                                            f_val = float(val) if not isinstance(val, str) else 0.0
+                                                                            internal_sock.default_value = (f_val, f_val, f_val)
+                                                                    elif 'NodeSocketColor' in str(type(internal_sock)):
+                                                                        if isinstance(val, list) and len(val) >= 4:
+                                                                            internal_sock.default_value = (val[0], val[1], val[2], val[3])
+                                                                        else:
+                                                                            f_val = float(val) if not isinstance(val, str) else 0.0
+                                                                            internal_sock.default_value = (f_val, f_val, f_val, 1.0)
+                                                                    break
+                                                else:
+                                                    output_socket.default_value = float(val[0]) if not isinstance(val[0], str) else 0.0
+                                        else:
+                                            output_socket.default_value = float(val) if not isinstance(val, str) else 0.0
                         except Exception as e:
                             print(f"输出值设置失败：{node.name}.{o} - {str(e)}")
 
-            # 重构节点连接恢复逻辑（支持转接点）
+            # 修改连接重建部分
             for link_info in nodes_data.get('links', []):
-                from_index = link_info['from_index']
-                to_index = link_info['to_index']
+                from_index = link_info.get('from_index', -1)
+                to_index = link_info.get('to_index', -1)
+                
                 if from_index < len(node_instances) and to_index < len(node_instances):
                     from_node = node_instances[from_index]
                     to_node = node_instances[to_index]
-                    
-                    # 处理转接点连接的特殊逻辑
+
+                    # 增强socket查找逻辑
                     try:
-                        from_socket = next(s for s in from_node.outputs if s.identifier == link_info['from_socket'])
-                        to_socket = next(s for s in to_node.inputs if s.identifier == link_info['to_socket'])
-                        
-                        # 如果是转接点连接，确保正确处理单输入多输出
-                        node_tree.links.new(to_socket, from_socket)
-                    except StopIteration:
-                        print(f"找不到对应socket: {from_node.name} -> {to_node.name}")
+                        # 处理转接点的特殊socket结构
+                        if from_node.bl_idname == 'NodeReroute':
+                            # 转接点只有一个输出socket
+                            from_socket = next(iter(from_node.outputs))
+                        else:
+                            from_socket = next(s for s in from_node.outputs if s.identifier == link_info['from_socket'] or s.name == link_info['from_socket'])
+
+                        if to_node.bl_idname == 'NodeReroute':
+                            # 转接点只有一个输入socket
+                            to_socket = next(iter(to_node.inputs))
+                        else:
+                            to_socket = next(s for s in to_node.inputs if s.identifier == link_info['to_socket'] or s.name == link_info['to_socket'])
+
+                        # 特殊处理节点组连接
+                        if from_node.bl_idname == 'ShaderNodeGroup' or to_node.bl_idname == 'ShaderNodeGroup':
+                            from_socket = None
+                            to_socket = None
+                            
+                            # 查找节点组内部socket
+                            if from_node.bl_idname == 'ShaderNodeGroup':
+                                for sock in from_node.outputs:
+                                    if sock.identifier == link_info['from_socket'] and sock.node_tree:
+                                        # 找到节点组内部对应的输出节点
+                                        group_output_node = sock.node_tree.nodes.get('Group Output')
+                                        if group_output_node:
+                                            for internal_sock in group_output_node.inputs:
+                                                if internal_sock.identifier == sock.identifier:
+                                                    from_socket = internal_sock
+                                                    break
+                            if to_node.bl_idname == 'ShaderNodeGroup':
+                                for sock in to_node.inputs:
+                                    if sock.identifier == link_info['to_socket'] and sock.node_tree:
+                                        # 找到节点组内部对应的输入节点
+                                        group_input_node = sock.node_tree.nodes.get('Group Input')
+                                        if group_input_node:
+                                            for internal_sock in group_input_node.outputs:
+                                                if internal_sock.identifier == sock.identifier:
+                                                    to_socket = internal_sock
+                                                    break
+                            
+                            if from_socket and to_socket:
+                                node_tree.links.new(to_socket, from_socket)
+                            elif from_node.bl_idname != 'NodeReroute' and to_node.bl_idname != 'NodeReroute':
+                                print(f"无法找到匹配的socket: {link_info['from_socket']} -> {link_info['to_socket']}")
+                        else:
+                            node_tree.links.new(to_socket, from_socket)
+                    except StopIteration as e:
+                        print(f"找不到对应socket: {from_node.name}({from_node.bl_idname}) -> {to_node.name}({to_node.bl_idname})")
+                        print(f"查找标识符: {link_info['from_socket']} -> {link_info['to_socket']}")
+                        raise e
         except Exception as e:
             self.report({'ERROR'}, f"加载预设失败: {str(e)}")
             return {'CANCELLED'}
