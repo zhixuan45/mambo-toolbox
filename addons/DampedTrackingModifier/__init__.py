@@ -81,6 +81,26 @@ class ControlDampingTrackParams(bpy.types.Operator):
         return wm.invoke_props_dialog(self)
 
 
+class ClearDampingTrack(bpy.types.Operator):
+    """清除选中骨骼的阻尼追踪约束"""
+    bl_idname = "rig.clear_damping_track"
+    bl_label = "清除阻尼追踪"
+
+    def execute(self, context):
+        armature = context.active_object
+        if armature.type != 'ARMATURE':
+            self.report({'ERROR'}, "活动对象不是骨骼对象。")
+            return {'CANCELLED'}
+
+        bones = [bone for bone in armature.pose.bones if bone.bone.select]
+        for bone in bones:
+            for constraint in bone.constraints:
+                if constraint.type == 'DAMPED_TRACK':
+                    bone.constraints.remove(constraint)
+
+        return {'FINISHED'}
+
+
 class HairPhysicsPanel(bpy.types.Panel):
     """在3D视图工具架中创建一个面板"""
     bl_label = "菌菌阻尼追踪器"
@@ -105,6 +125,7 @@ class HairPhysicsPanel(bpy.types.Panel):
         button_box.alignment = 'CENTER'
         button_box.operator("rig.generate_damping_track", icon='CONSTRAINT_BONE')
         button_box.operator("rig.control_damping_track_params", icon='PREFERENCES')
+        button_box.operator("rig.clear_damping_track", icon='X')  # 新增清除按钮
 
         # 添加防盗文字
         layout.separator()
@@ -115,12 +136,14 @@ class HairPhysicsPanel(bpy.types.Panel):
 def register():
     bpy.utils.register_class(GenerateDampingTrack)
     bpy.utils.register_class(ControlDampingTrackParams)
+    bpy.utils.register_class(ClearDampingTrack)  # 注册新类
     bpy.utils.register_class(HairPhysicsPanel)
 
 
 def unregister():
     bpy.utils.unregister_class(GenerateDampingTrack)
     bpy.utils.unregister_class(ControlDampingTrackParams)
+    bpy.utils.unregister_class(ClearDampingTrack)  # 注销新类
     bpy.utils.unregister_class(HairPhysicsPanel)
 
 
